@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Avance</title>
+<meta property="og:title" content="Avance" />
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,340;9..144,440;9..144,560&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg-panel:#121214;
+    --hairline: rgba(201,162,39,0.22);
+    --hairline-soft: rgba(201,162,39,0.1);
+    --text:#f2f0ea;
+    --text-muted:#8d8b86;
+    --gold:#c9a227;
+    --gold-soft:#e7cd7c;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter', -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    opacity:0.045;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(201,162,39,0.07), transparent 60%),
+      radial-gradient(ellipse 120% 80% at 50% 100%, rgba(0,0,0,0.6), transparent 60%);
+  }
+
+  main{
+    position:relative;
+    z-index:2;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding: clamp(20px, 3vw, 32px) clamp(20px, 5vw, 40px) clamp(24px, 4vw, 40px);
+  }
+
+  .wrap{
+    width:100%;
+    max-width:860px;
+    text-align:center;
+  }
+
+  .mark{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    margin-bottom: clamp(12px, 2vw, 18px);
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.16,1,.3,1) 0.05s forwards;
+  }
+  .mark .line{
+    height:1px;
+    width:34px;
+    background:linear-gradient(90deg, transparent, var(--hairline));
+  }
+  .mark .line.right{ background:linear-gradient(90deg, var(--hairline), transparent); }
+  .mark .diamond{
+    width:6px;
+    height:6px;
+    background:var(--gold);
+    transform:rotate(45deg);
+    flex-shrink:0;
+  }
+
+  .eyebrow{
+    font-family:'Inter', sans-serif;
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--gold-soft);
+    margin:0 0 clamp(10px, 1.6vw, 16px);
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.16,1,.3,1) 0.15s forwards;
+  }
+
+  h1{
+    font-family:'Fraunces', serif;
+    font-optical-sizing:auto;
+    font-weight:440;
+    font-size: clamp(26px, 3.4vw, 40px);
+    line-height:1.16;
+    letter-spacing:-0.01em;
+    margin:0 0 clamp(12px, 1.6vw, 16px);
+    color:var(--text);
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.16,1,.3,1) 0.25s forwards;
+  }
+
+  h1 em{
+    font-style:italic;
+    font-weight:340;
+    color:var(--gold-soft);
+  }
+
+  .sub{
+    font-family:'Inter', sans-serif;
+    font-size: clamp(14px, 1.2vw, 16px);
+    line-height:1.5;
+    color:var(--text-muted);
+    max-width:560px;
+    margin: 0 auto clamp(20px, 3vw, 28px);
+    opacity:0;
+    animation: rise 0.9s cubic-bezier(.16,1,.3,1) 0.35s forwards;
+  }
+
+  .stage{
+    width:100%;
+    max-width:760px;
+    margin:0 auto;
+    padding: clamp(8px, 1vw, 12px);
+    background:var(--bg-panel);
+    border:1px solid var(--hairline-soft);
+    border-radius:6px;
+    box-shadow:
+      0 40px 100px -30px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(255,255,255,0.02) inset;
+    opacity:0;
+    animation: rise 1s cubic-bezier(.16,1,.3,1) 0.45s forwards;
+  }
+
+  .stage-inner{
+    position:relative;
+    width:100%;
+    border-radius:3px;
+    overflow:hidden;
+    background:#000;
+  }
+
+  .stage-inner iframe{
+    display:block;
+  }
+
+  .signals{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:100%;
+    max-width:640px;
+    margin: clamp(24px, 4vw, 34px) auto 0;
+    opacity:0;
+    animation: rise 1s cubic-bezier(.16,1,.3,1) 0.55s forwards;
+  }
+
+  .signal{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    padding: 16px 20px;
+    border:1px solid var(--hairline-soft);
+    border-radius:14px;
+    background: rgba(255,255,255,0.02);
+    text-align:left;
+  }
+
+  .signal-icon{
+    flex-shrink:0;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--hairline);
+    background: rgba(201,162,39,0.06);
+  }
+
+  .signal-icon svg{
+    width:20px;
+    height:20px;
+    stroke:var(--gold-soft);
+    fill:none;
+    stroke-width:1.6;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+
+  .signal-text{
+    font-size:14.5px;
+    line-height:1.42;
+    color:var(--text);
+    letter-spacing:0.005em;
+  }
+
+  .cta-wrap{
+    display:none;
+    justify-content:center;
+    margin-top: clamp(32px, 5vw, 48px);
+  }
+
+  .cta-wrap.visible{
+    display:flex;
+    animation: rise 0.8s cubic-bezier(.16,1,.3,1) forwards;
+  }
+
+  .cta-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding: 16px 34px;
+    background:#22c55e;
+    color:#0a1a0f;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    border-radius:999px;
+    text-decoration:none;
+    letter-spacing:0.01em;
+    box-shadow: 0 20px 44px -14px rgba(34,197,94,0.45);
+    transition: transform .2s ease, box-shadow .2s ease;
+    animation: pulse 2s ease-out 0.9s infinite;
+  }
+
+  .cta-btn:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 26px 52px -14px rgba(34,197,94,0.55);
+  }
+
+  @keyframes pulse{
+    0%, 100%{
+      box-shadow: 0 20px 44px -14px rgba(34,197,94,0.45), 0 0 0 0 rgba(34,197,94,0.55);
+    }
+    50%{
+      box-shadow: 0 20px 44px -14px rgba(34,197,94,0.45), 0 0 0 14px rgba(34,197,94,0);
+    }
+  }
+
+  @keyframes rise{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .mark, .eyebrow, h1, .sub, .stage{
+      animation:none !important;
+      opacity:1 !important;
+      transform:none !important;
+    }
+    .cta-btn{
+      animation:none !important;
+    }
+  }
+
+  @media (max-width: 680px){
+    main{
+      padding: 18px 18px 32px;
+    }
+    .mark{ margin-bottom: 14px; }
+    .mark .line{ width:24px; }
+    .eyebrow{
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      margin-bottom: 12px;
+    }
+    h1{
+      font-size: clamp(22px, 6.2vw, 28px);
+      line-height: 1.22;
+      margin-bottom: 12px;
+    }
+    .sub{
+      font-size: 14px;
+      line-height:1.5;
+      margin-bottom: 18px;
+    }
+    .stage{ padding: 6px; }
+    .signals{
+      margin-top:22px;
+      gap:10px;
+    }
+    .signal{
+      padding:14px 16px;
+      gap:12px;
+    }
+    .signal-icon{
+      width:40px;
+      height:40px;
+    }
+    .signal-icon svg{
+      width:18px;
+      height:18px;
+    }
+    .signal-text{
+      font-size:13.5px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wrap">
+
+    <div class="mark">
+      <span class="line"></span>
+      <span class="diamond"></span>
+      <span class="line right"></span>
+    </div>
+
+    <p class="eyebrow">Para quem já pagou por curso, aula e mentoria sem ver o dinheiro voltar</p>
+
+    <h1>R$1.501 investidos aqui podem voltar como <em>até R$4.500 em vendas.</em></h1>
+
+    <p class="sub">Nenhum curso te mostrou essa conta. Assista até o final e veja como funciona na prática.</p>
+
+    <div class="stage">
+      <div class="stage-inner">
+        <vturb-smartplayer id="vid-6a5ba345dfab98b2d3a07174" style="display: block; margin: 0 auto; width: 100%;">
+          <div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: black;"></div>
+        </vturb-smartplayer>
+      </div>
+    </div>
+
+    <div class="signals">
+      <div class="signal">
+        <span class="signal-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none" style="fill:var(--gold-soft)"/></svg>
+        </span>
+        <span class="signal-text">R$1.501 investidos podem retornar até R$4.500 em vendas</span>
+      </div>
+      <div class="signal">
+        <span class="signal-icon">
+          <svg viewBox="0 0 24 24"><path d="M3.5 7l8.5-4 8.5 4-8.5 4-8.5-4z"/><path d="M3.5 7v9.5l8.5 4 8.5-4V7"/><path d="M12 11v9.5"/></svg>
+        </span>
+        <span class="signal-text">Produto físico, não é mais um curso ou mentoria</span>
+      </div>
+      <div class="signal">
+        <span class="signal-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 16l6-6 4 4 6-7"/><path d="M14 7h6v6"/></svg>
+        </span>
+        <span class="signal-text">Resultado mensurável em vendas reais, não em certificado</span>
+      </div>
+    </div>
+
+    <div class="cta-wrap" id="ctaWrap">
+      <a
+        href="https://linkcur.to/r/atendimento-ozonteck"
+        class="cta-btn"
+        id="ctaBtn"
+        target="_blank"
+        rel="noopener">
+        Falar com a Equipe
+      </a>
+    </div>
+
+  </div>
+</main>
+
+<script type="text/javascript">
+  var s = document.createElement("script");
+  s.src = "https://scripts.converteai.net/1e01763a-1621-4ad9-9b42-cc8bf032472d/players/6a5ba345dfab98b2d3a07174/v4/player.js";
+  s.async = true;
+  document.head.appendChild(s);
+</script>
+
+<script>
+(function(){
+  var KEY = 'avance_cta_unlocked_mdn';
+  var DELAY_MS = 19 * 60 * 1000;
+  var wrap = document.getElementById('ctaWrap');
+  if(!wrap) return;
+
+  function reveal(shouldScroll){
+    wrap.classList.add('visible');
+    if(shouldScroll){
+      setTimeout(function(){
+        wrap.scrollIntoView({ behavior:'smooth', block:'center' });
+      }, 250);
+    }
+  }
+
+  var alreadyUnlocked = false;
+  try { alreadyUnlocked = localStorage.getItem(KEY) === '1'; } catch(e){}
+
+  if(alreadyUnlocked){
+    reveal(false);
+  } else {
+    setTimeout(function(){
+      try { localStorage.setItem(KEY, '1'); } catch(e){}
+      reveal(true);
+    }, DELAY_MS);
+  }
+})();
+</script>
+
+</body>
+</html>
