@@ -379,8 +379,8 @@
 
 
     <div class="hero-actions" id="heroActions">
-      <a href="https://linkcur.to/r/trio-cadastro" class="btn-primary" target="_blank" rel="noopener">Comece Agora</a>
-      <a href="https://linkcur.to/r/trio-atendimento" class="btn-secondary" target="_blank" rel="noopener">Falar no WhatsApp</a>
+      <a href="#" class="btn-primary" id="btnComeceAgora" rel="noopener">Comece Agora</a>
+      <a href="#" class="btn-secondary" id="btnFalarWhatsapp" rel="noopener">Falar no WhatsApp</a>
     </div>
     <div class="signals">
       <div class="signal">
@@ -431,6 +431,50 @@
       el.classList.add('visible');
     }, DELAY_MS);
   }
+})();
+</script>
+
+<script>
+(function(){
+  var SUPABASE_URL = 'https://ghqsqqegblhseocxmwwx.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdocXNxcWVnYmxoc2VvY3htd3d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTQ0MzAsImV4cCI6MjEwMDIzMDQzMH0.S7zwoajCa0HnoMtqCSmlHCmxFRT7EqmztW38ZOgpDEg';
+
+  function getNextAttendantUrl(channel){
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/avance_get_next_attendant', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({ p_channel: channel, p_page: 'root' })
+    })
+      .then(function(res){ return res.json(); })
+      .then(function(rows){
+        if(Array.isArray(rows) && rows.length > 0 && rows[0].url){
+          return rows[0].url;
+        }
+        throw new Error('empty response');
+      });
+  }
+
+  function wireButton(id, channel, fallbackUrl){
+    var btn = document.getElementById(id);
+    if(!btn) return;
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      getNextAttendantUrl(channel)
+        .then(function(url){
+          window.open(url, '_blank', 'noopener');
+        })
+        .catch(function(){
+          window.open(fallbackUrl, '_blank', 'noopener');
+        });
+    });
+  }
+
+  wireButton('btnComeceAgora', 'cadastro', 'https://linkcur.to/r/trio-cadastro');
+  wireButton('btnFalarWhatsapp', 'whatsapp', 'https://linkcur.to/r/trio-atendimento');
 })();
 </script>
 
