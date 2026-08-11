@@ -164,14 +164,17 @@
   }
 
   .hero-actions{
-    display:flex;
+    display:none;
     flex-direction:column;
     gap:12px;
     width:100%;
     max-width:640px;
     margin: clamp(20px, 3vw, 28px) auto 0;
-    opacity:0;
-    animation: rise 1s cubic-bezier(.16,1,.3,1) 0.5s forwards;
+  }
+
+  .hero-actions.visible{
+    display:flex;
+    animation: rise 0.8s cubic-bezier(.16,1,.3,1) forwards;
   }
 
   .btn-primary{
@@ -404,7 +407,7 @@
     </div>
 
 
-    <div class="hero-actions">
+    <div class="hero-actions" id="heroActions">
       <a href="https://linkcur.to/r/cadastro-ozonteck" class="btn-primary" target="_blank" rel="noopener">Comece Agora</a>
       <a href="https://linkcur.to/r/atendimento-ozonteck" class="btn-secondary" target="_blank" rel="noopener">Falar no WhatsApp</a>
     </div>
@@ -448,6 +451,27 @@
   s.src = "https://scripts.converteai.net/1e01763a-1621-4ad9-9b42-cc8bf032472d/players/6a7a8f8d8613a1b1d5121698/v4/player.js";
   s.async = true;
   document.head.appendChild(s);
+</script>
+
+<script>
+(function(){
+  var KEY = 'avance_hero_unlocked_mmnc';
+  var DELAY_MS = 3 * 60 * 1000;
+  var el = document.getElementById('heroActions');
+  if(!el) return;
+
+  var alreadyUnlocked = false;
+  try { alreadyUnlocked = localStorage.getItem(KEY) === '1'; } catch(e){}
+
+  if(alreadyUnlocked){
+    el.classList.add('visible');
+  } else {
+    setTimeout(function(){
+      try { localStorage.setItem(KEY, '1'); } catch(e){}
+      el.classList.add('visible');
+    }, DELAY_MS);
+  }
+})();
 </script>
 
 <script>
