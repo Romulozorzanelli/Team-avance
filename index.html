@@ -163,6 +163,59 @@
     display:block;
   }
 
+  .hero-actions{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:100%;
+    max-width:640px;
+    margin: clamp(20px, 3vw, 28px) auto 0;
+    opacity:0;
+    animation: rise 1s cubic-bezier(.16,1,.3,1) 0.5s forwards;
+  }
+
+  .btn-primary{
+    display:block;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+    color:#1a1408;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.01em;
+    text-align:center;
+    text-decoration:none;
+    border-radius:10px;
+    box-shadow: 0 20px 44px -18px rgba(201,162,39,0.55);
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+
+  .btn-primary:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 24px 50px -18px rgba(201,162,39,0.65);
+  }
+
+  .btn-secondary{
+    display:block;
+    padding: 15px 28px;
+    background: transparent;
+    color:var(--gold-soft);
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.01em;
+    text-align:center;
+    text-decoration:none;
+    border:1px solid var(--hairline);
+    border-radius:10px;
+    transition: background .2s ease, transform .2s ease;
+  }
+
+  .btn-secondary:hover{
+    background: rgba(201,162,39,0.06);
+    transform: translateY(-2px);
+  }
+
   .signals{
     display:flex;
     flex-direction:column;
@@ -295,6 +348,14 @@
       margin-bottom: 18px;
     }
     .stage{ padding: 6px; }
+    .hero-actions{
+      margin-top:18px;
+      gap:10px;
+    }
+    .btn-primary, .btn-secondary{
+      padding:14px 24px;
+      font-size:14px;
+    }
     .signals{
       margin-top:22px;
       gap:10px;
@@ -342,6 +403,11 @@
       </div>
     </div>
 
+
+    <div class="hero-actions">
+      <a href="https://linkcur.to/r/cadastro-ozonteck" class="btn-primary" target="_blank" rel="noopener">Comece Agora</a>
+      <a href="https://linkcur.to/r/atendimento-ozonteck" class="btn-secondary" target="_blank" rel="noopener">Falar no WhatsApp</a>
+    </div>
     <div class="signals">
       <div class="signal">
         <span class="signal-icon">
