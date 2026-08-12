@@ -438,24 +438,56 @@
 (function(){
   var SUPABASE_URL = 'https://ghqsqqegblhseocxmwwx.supabase.co';
   var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdocXNxcWVnYmxoc2VvY3htd3d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTQ0MzAsImV4cCI6MjEwMDIzMDQzMH0.S7zwoajCa0HnoMtqCSmlHCmxFRT7EqmztW38ZOgpDEg';
+  var STORAGE_KEY = 'avance_assigned_attendant_root';
 
-  function getNextAttendantUrl(channel){
-    return fetch(SUPABASE_URL + '/rest/v1/rpc/avance_get_next_attendant', {
+  function supabaseRpc(fn, payload){
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
       },
-      body: JSON.stringify({ p_channel: channel, p_page: 'root' })
-    })
+      body: JSON.stringify(payload)
+    });
+  }
+
+  function getCachedAttendant(){
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return null;
+      var parsed = JSON.parse(raw);
+      if(parsed && parsed.attendant_id && parsed.cadastro_url && parsed.whatsapp_url) return parsed;
+      return null;
+    } catch(e){ return null; }
+  }
+
+  function cacheAttendant(att){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(att)); } catch(e){}
+  }
+
+  function urlForChannel(att, channel){
+    return channel === 'cadastro' ? att.cadastro_url : att.whatsapp_url;
+  }
+
+  function assignNewAttendant(channel){
+    return supabaseRpc('avance_get_next_attendant', { p_channel: channel, p_page: 'root' })
       .then(function(res){ return res.json(); })
       .then(function(rows){
-        if(Array.isArray(rows) && rows.length > 0 && rows[0].url){
-          return rows[0].url;
-        }
-        throw new Error('empty response');
+        if(!Array.isArray(rows) || rows.length === 0) throw new Error('empty response');
+        var att = {
+          attendant_id: rows[0].attendant_id,
+          cadastro_url: rows[0].cadastro_url,
+          whatsapp_url: rows[0].whatsapp_url
+        };
+        cacheAttendant(att);
+        return urlForChannel(att, channel);
       });
+  }
+
+  function logRepeatClick(att, channel){
+    supabaseRpc('avance_log_click', { p_attendant_id: att.attendant_id, p_channel: channel, p_page: 'root' })
+      .catch(function(){});
   }
 
   function wireButton(id, channel, fallbackUrl){
@@ -463,7 +495,15 @@
     if(!btn) return;
     btn.addEventListener('click', function(e){
       e.preventDefault();
-      getNextAttendantUrl(channel)
+      var cached = getCachedAttendant();
+
+      if(cached){
+        logRepeatClick(cached, channel);
+        window.open(urlForChannel(cached, channel), '_blank', 'noopener');
+        return;
+      }
+
+      assignNewAttendant(channel)
         .then(function(url){
           window.open(url, '_blank', 'noopener');
         })
