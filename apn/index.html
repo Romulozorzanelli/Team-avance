@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Avance</title>
+<meta property="og:title" content="Avance" />
+<meta name="robots" content="noindex" />
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg-panel:#121214;
+    --hairline: rgba(201,162,39,0.22);
+    --hairline-soft: rgba(201,162,39,0.1);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    opacity:0.045;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 0%, rgba(201,162,39,0.07), transparent 60%),
+      radial-gradient(ellipse 120% 80% at 50% 100%, rgba(0,0,0,0.6), transparent 60%);
+  }
+
+  main{
+    position:relative;
+    z-index:2;
+    min-height:100svh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: clamp(16px, 3vw, 32px);
+  }
+
+  .stage{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
+    padding: clamp(8px, 1vw, 12px);
+    background:var(--bg-panel);
+    border:1px solid var(--hairline-soft);
+    border-radius:6px;
+    box-shadow:
+      0 40px 100px -30px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(255,255,255,0.02) inset;
+  }
+
+  .stage-inner{
+    position:relative;
+    width:100%;
+    border-radius:3px;
+    overflow:hidden;
+    background:#000;
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="stage">
+    <div class="stage-inner">
+      <vturb-smartplayer id="vid-6a998650371f2853f0479411" style="display: block; margin: 0 auto; width: 100%;">
+        <div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: black;"></div>
+      </vturb-smartplayer>
+    </div>
+  </div>
+</main>
+
+<script type="text/javascript">
+  var s = document.createElement("script");
+  s.src = "https://scripts.converteai.net/1e01763a-1621-4ad9-9b42-cc8bf032472d/players/6a998650371f2853f0479411/v4/player.js";
+  s.async = true;
+  document.head.appendChild(s);
+</script>
+
+</body>
+</html>
