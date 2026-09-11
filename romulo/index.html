@@ -374,6 +374,102 @@ src="https://www.facebook.com/tr?id=1766329791184056&ev=PageView&noscript=1"
       font-size:13.5px;
     }
   }
+  .lead-modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:999;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(5,5,6,0.78);
+    backdrop-filter:blur(3px);
+  }
+
+  .lead-modal-overlay.visible{
+    display:flex;
+  }
+
+  .lead-modal{
+    position:relative;
+    width:100%;
+    max-width:380px;
+    background:var(--bg-panel);
+    border:1px solid var(--hairline);
+    border-radius:16px;
+    padding:28px 24px 24px;
+    box-shadow:0 40px 100px -30px rgba(0,0,0,0.8);
+    animation: rise 0.35s cubic-bezier(.16,1,.3,1) forwards;
+  }
+
+  .lead-modal-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    width:28px;
+    height:28px;
+    border:none;
+    background:transparent;
+    color:var(--text-muted);
+    font-size:20px;
+    line-height:1;
+    cursor:pointer;
+  }
+
+  .lead-modal-title{
+    font-family:'Fraunces', serif;
+    font-size:20px;
+    font-weight:500;
+    color:var(--text);
+    margin:0 0 8px;
+  }
+
+  .lead-modal-sub{
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--text-muted);
+    margin:0 0 18px;
+  }
+
+  .lead-modal input{
+    width:100%;
+    padding:13px 14px;
+    margin-bottom:10px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid var(--hairline-soft);
+    border-radius:10px;
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    outline:none;
+  }
+
+  .lead-modal input::placeholder{
+    color:var(--text-muted);
+  }
+
+  .lead-modal input:focus{
+    border-color:var(--gold);
+  }
+
+  .lead-modal-submit{
+    width:100%;
+    padding:14px;
+    margin-top:4px;
+    background:linear-gradient(135deg, var(--gold), var(--gold-soft));
+    color:#1a1408;
+    font-family:'Inter', sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+  }
+
+  .lead-modal-submit:disabled{
+    opacity:0.6;
+    cursor:default;
+  }
 </style>
 </head>
 <body>
@@ -464,6 +560,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <script>
 (function(){
+  var SUPABASE_URL = 'https://ghqsqqegblhseocxmwwx.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdocXNxcWVnYmxoc2VvY3htd3d4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NTQ0MzAsImV4cCI6MjEwMDIzMDQzMH0.S7zwoajCa0HnoMtqCSmlHCmxFRT7EqmztW38ZOgpDEg';
+
+  var overlay = document.getElementById('leadModalOverlay');
+  var form = document.getElementById('leadForm');
+  var closeBtn = document.getElementById('leadModalClose');
+  var nameInput = document.getElementById('leadName');
+  var whatsappInput = document.getElementById('leadWhatsapp');
+  var submitBtn = document.getElementById('leadSubmitBtn');
+  var pending = null;
+
   function trackLead(channel){
     try {
       if(typeof fbq === 'function') fbq('track', 'Lead');
@@ -474,13 +581,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     } catch(e){}
   }
 
+  function openModal(channel, url){
+    pending = { channel: channel, url: url };
+    if(overlay){
+      overlay.classList.add('visible');
+      setTimeout(function(){ if(nameInput) nameInput.focus(); }, 50);
+    }
+  }
+
+  function closeModal(){
+    if(overlay) overlay.classList.remove('visible');
+    if(form) form.reset();
+    pending = null;
+  }
+
+  function captureLead(name, whatsapp, channel, url){
+    fetch(SUPABASE_URL + '/rest/v1/rpc/avance_capture_lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify({
+        p_name: name,
+        p_whatsapp: whatsapp,
+        p_channel: channel,
+        p_destination_url: url,
+        p_page: 'romulo'
+      })
+    }).catch(function(){});
+  }
+
   function wireButton(id, channel, url){
     var btn = document.getElementById(id);
     if(!btn) return;
     btn.addEventListener('click', function(e){
       e.preventDefault();
       trackLead(channel);
+      openModal(channel, url);
+    });
+  }
+
+  if(closeBtn) closeBtn.addEventListener('click', closeModal);
+  if(overlay){
+    overlay.addEventListener('click', function(e){
+      if(e.target === overlay) closeModal();
+    });
+  }
+
+  if(form){
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      if(!pending) return;
+
+      var name = (nameInput.value || '').trim();
+      var whatsapp = (whatsappInput.value || '').trim();
+      var digits = whatsapp.replace(/\D/g, '');
+
+      if(name.length === 0 || digits.length < 10){
+        if(name.length === 0) nameInput.focus();
+        else whatsappInput.focus();
+        return;
+      }
+
+      var channel = pending.channel;
+      var url = pending.url;
+
+      // Abre o destino na hora (gesto do usuario), captura o lead em paralelo
       window.open(url, '_blank', 'noopener');
+      captureLead(name, whatsapp, channel, url);
+      closeModal();
     });
   }
 
@@ -489,6 +660,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 })();
 </script>
 
+
+
+<div class="lead-modal-overlay" id="leadModalOverlay">
+  <div class="lead-modal">
+    <button type="button" class="lead-modal-close" id="leadModalClose" aria-label="Fechar">&times;</button>
+    <p class="lead-modal-title">Antes de continuar</p>
+    <p class="lead-modal-sub">Deixa seu nome e WhatsApp aqui, assim garantimos seu atendimento mesmo se a próxima página não abrir.</p>
+    <form id="leadForm">
+      <input type="text" id="leadName" placeholder="Seu nome" required autocomplete="name" />
+      <input type="tel" id="leadWhatsapp" placeholder="WhatsApp com DDD" required autocomplete="tel" inputmode="numeric" />
+      <button type="submit" class="lead-modal-submit" id="leadSubmitBtn">Continuar</button>
+    </form>
+  </div>
+</div>
 
 </body>
 </html>
