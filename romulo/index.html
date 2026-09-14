@@ -394,6 +394,8 @@ src="https://www.facebook.com/tr?id=1766329791184056&ev=PageView&noscript=1"
     position:relative;
     width:100%;
     max-width:380px;
+    max-height:90vh;
+    overflow-y:auto;
     background:var(--bg-panel);
     border:1px solid var(--hairline);
     border-radius:16px;
@@ -440,7 +442,7 @@ src="https://www.facebook.com/tr?id=1766329791184056&ev=PageView&noscript=1"
     border-radius:10px;
     color:var(--text);
     font-family:'Inter', sans-serif;
-    font-size:14px;
+    font-size:16px;
     outline:none;
   }
 
@@ -649,7 +651,11 @@ document.addEventListener('DOMContentLoaded', function(){
       var url = pending.url;
 
       // Abre o destino na hora (gesto do usuario), captura o lead em paralelo
-      window.open(url, '_blank', 'noopener');
+      var win = window.open(url, '_blank', 'noopener');
+      if(!win){
+        // Alguns navegadores mobile bloqueiam o popup mesmo dentro do gesto do usuario
+        window.location.href = url;
+      }
       captureLead(name, whatsapp, channel, url);
       closeModal();
     });
